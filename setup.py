@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="4chan-ripper",
-    version="0.2.0",
+    version="0.0.1",
     author="Fastily",
     author_email="fastily@users.noreply.github.com",
     description="Rips the contents of threads on 4chan",
@@ -26,9 +26,9 @@ setuptools.setup(
     classifiers=[
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.11",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.9',
+    python_requires='>=3.11',
 )

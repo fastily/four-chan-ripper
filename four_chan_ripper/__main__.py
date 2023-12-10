@@ -20,8 +20,6 @@ log = logging.getLogger(__name__)
 class RippableThread:
     """Represents a thread on 4chan to rip"""
 
-    OUT_DIR = Path.home() / "Public"
-
     def __init__(self, board: str, thread: str, is_photoset: bool = False) -> None:
         """Initializer, creates a new RippableThread object
 
@@ -41,13 +39,16 @@ class RippableThread:
         self._subject = op.get("sub") or op.get("semantic_url", thread)
         self._comment = op.get("com")
 
-    def download(self) -> bool:
+    def download(self, out_dir: Path) -> bool:
         """Actually download try downloading the thread represented by this RippableThread.
+
+        Args:
+            out_dir (Path): The output directory to save downloaded files to.
 
         Returns:
             bool: `True` if there were no errors
         """
-        (output_dir := RippableThread.OUT_DIR / ((f"{self.thread} - " if not self.is_photoset else "") + self._subject.replace("/", "_").replace(":", "").replace("&amp;", "&"))).mkdir(parents=True, exist_ok=True)
+        (output_dir := out_dir / ((f"{self.thread} - " if not self.is_photoset else "") + self._subject.replace("/", "_").replace(":", "").replace("&amp;", "&"))).mkdir(parents=True, exist_ok=True)
         log.info("Using folder: '%s'", output_dir)
 
         if self.is_photoset and self._comment and len((txt := BeautifulSoup(self._comment, "lxml").get_text("\n"))) > 50:
@@ -72,25 +73,20 @@ def _main() -> None:
     cli_parser.add_argument('-b', type=str, metavar="board_id", default="hr", help="The short id of the board to target. Ignored if the program was not started in interactive mode.  Default is hr")
     cli_parser.add_argument('-i', action='store_true', help="Causes the archive file to get ignored. Only applicable in interactive mode.")
     cli_parser.add_argument('-s', action='store_true', help="Treat the input urls as a photoset to rip")
-    cli_parser.add_argument('--out', type=Path, metavar="output_directory", help="The output directory. Default is ~/Public")
+    cli_parser.add_argument('-o', type=Path, default=Path("."), metavar="output_directory", help="The output directory. Defaults to the current working directory.")
     cli_parser.add_argument('urls', type=str, nargs='*', help='the urls to process')
-
     args = cli_parser.parse_args()
 
     log.addHandler(RichHandler(rich_tracebacks=True))
     log.setLevel(logging.INFO)
 
-    if args.out:
-        RippableThread.OUT_DIR = args.out
-
     if args.urls:
         for url in args.urls:
             board, _, no = urlparse(url).path.split("/")[1:4]
-            RippableThread(board, no, args.s).download()
-
+            RippableThread(board, no, args.s).download(args.o)
         return
 
-    archived = set(archive_file.read_text().splitlines()) if not args.i and (archive_file := RippableThread.OUT_DIR / ".archive.txt").is_file() else set()
+    archived = set(archive_file.read_text().splitlines()) if not args.i and (archive_file := args.o / ".archive.txt").is_file() else set()
 
     targets = {}
     display_pairs = {}
@@ -109,7 +105,7 @@ def _main() -> None:
     for id in photoset_selected:
         targets[id].is_photoset = True
 
-    if (successful_downloads := [f"{targets[id].board}{id}" for id in selected if targets[id].download()]) and not args.i:
+    if (successful_downloads := [f"{targets[id].board}{id}" for id in selected if targets[id].download(args.o)]) and not args.i:
         with archive_file.open("a") as f:
             f.write("\n".join(successful_downloads) + "\n")
 

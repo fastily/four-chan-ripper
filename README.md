@@ -13,7 +13,7 @@ usage: 4cr [-h] [-b board_id] [-i] [-s] [--out output_directory] [urls ...]
 positional arguments:
   urls                  the urls to process
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -b board_id           The short id of the board to target. Ignored if the program was not started in interactive mode. Default is hr
   -i                    Causes the archive file to get ignored. Only applicable in interactive mode.
