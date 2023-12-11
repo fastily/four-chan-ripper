@@ -69,7 +69,7 @@ class RippableThread:
 
 def _main() -> None:
     """Main driver, invoked when this file is run directly."""
-    cli_parser = ArgumentParser(description="4cr CLI")
+    cli_parser = ArgumentParser(description="4chan ripper CLI")
     cli_parser.add_argument('-b', type=str, metavar="board_id", default="hr", help="The short id of the board to target. Ignored if the program was not started in interactive mode.  Default is hr")
     cli_parser.add_argument('-i', action='store_true', help="Causes the archive file to get ignored. Only applicable in interactive mode.")
     cli_parser.add_argument('-s', action='store_true', help="Treat the input urls as a photoset to rip")

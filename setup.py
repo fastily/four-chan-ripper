@@ -4,16 +4,16 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="4chan-ripper",
+    name="four-chan-ripper",
     version="0.0.1",
     author="Fastily",
     author_email="fastily@users.noreply.github.com",
     description="Rips the contents of threads on 4chan",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/fastily/4chan-ripper",
+    url="https://github.com/fastily/four-chan-ripper",
     project_urls={
-        "Bug Tracker": "https://github.com/fastily/4chan-ripper/issues",
+        "Bug Tracker": "https://github.com/fastily/four-chan-ripper/issues",
     },
     include_package_data=True,
     packages=setuptools.find_packages(include=["four_chan_ripper"]),

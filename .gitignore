@@ -17,6 +17,6 @@ dist
 *.egg-info
 
 # virtualenv
-venv_4chan_ripper
+venv_four_chan_ripper
 
 scratch.py
