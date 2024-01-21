@@ -9,9 +9,11 @@ Tool for ripping and saving the media files in 4chan threads.
 pip install four-chan-ripper
 ```
 
+👉 Installs a CLI alias called `4cr` which can be used to invoke the program directly
+
 ## Usage
 ```
-usage: __main__.py [-h] [-b board_id] [-i] [-s] [-o output_directory] [urls ...]
+usage: 4cr [-h] [-b board_id] [-i] [-s] [-o output_directory] [urls ...]
 
 4chan ripper CLI
 
@@ -25,4 +27,3 @@ options:
   -s                   Treat the input urls as a photoset to rip
   -o output_directory  The output directory. Defaults to the current working directory.
 ```
-Also installs a CLI alias called `4cr` which can be used to invoke the program directly
