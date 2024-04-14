@@ -1,5 +1,5 @@
-beautifulsoup4==4.12.2
-lxml==4.9.3
-prompt-toolkit==3.0.41
+beautifulsoup4==4.12.3
+lxml==5.2.1
+prompt-toolkit==3.0.43
 requests==2.31.0
 rich==13.7.0
