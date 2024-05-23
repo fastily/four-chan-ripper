@@ -95,6 +95,10 @@ def _main() -> None:
             targets[id] = (rt := RippableThread(args.b, id))
             display_pairs[id] = f"[{len(rt.file_list)}] {l[1].get_text()}"
 
+    if not display_pairs:
+        log.warning("No threads matching the specified criteria are available to rip or they have all already been ripped.  Doing nothing.")
+        return
+
     if not (selected := checkboxlist_dialog("Select threads to rip", values=list(display_pairs.items())).run()):
         return
 
