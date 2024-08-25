@@ -17,7 +17,7 @@ setuptools.setup(
     },
     include_package_data=True,
     packages=setuptools.find_packages(include=["four_chan_ripper"]),
-    install_requires=['beautifulsoup4', 'lxml', 'prompt-toolkit', 'requests', 'rich'],
+    install_requires=['beautifulsoup4', 'lxml', 'prompt-toolkit', 'requests', 'rich', 'spawn-user-agent'],
     entry_points={
         'console_scripts': [
             '4cr = four_chan_ripper.__main__:_main'

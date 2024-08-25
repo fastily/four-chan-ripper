@@ -4,6 +4,7 @@ import logging
 
 from argparse import ArgumentParser
 from pathlib import Path
+from random import choice
 from urllib.parse import urlparse
 
 import requests
@@ -12,9 +13,11 @@ from bs4 import BeautifulSoup
 from prompt_toolkit.shortcuts import checkboxlist_dialog
 from rich.logging import RichHandler
 from rich.progress import track
-
+from spawn_user_agent.user_agent import SpawnUserAgent
 
 log = logging.getLogger(__name__)
+
+_UAS = SpawnUserAgent.generate_all()
 
 
 class RippableThread:
@@ -32,7 +35,8 @@ class RippableThread:
         self.thread = thread
         self.is_photoset = is_photoset
 
-        posts = requests.get(f'https://a.4cdn.org/{board}/thread/{thread}.json').json()["posts"]
+        self._headers = {"User-Agent": choice(_UAS)}
+        posts = requests.get(f'https://a.4cdn.org/{board}/thread/{thread}.json', headers=self._headers).json()["posts"]
         self.file_list = {f"{p['tim']}{p['ext']}" for p in posts if "tim" in p and "ext" in p}
 
         op = posts[0]
@@ -59,7 +63,7 @@ class RippableThread:
         for fn in track(self.file_list, f"Processing '{self._subject}'..."):
             if not (out_file := output_dir / fn).is_file():
                 try:
-                    out_file.write_bytes(requests.get(f"https://i.4cdn.org/{self.board}/{fn}").content)
+                    out_file.write_bytes(requests.get(f"https://i.4cdn.org/{self.board}/{fn}", headers=self._headers).content)
                 except Exception:
                     log.warning("Failed to download '%s'", fn, exc_info=True)
                     success = False
