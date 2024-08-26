@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="four-chan-ripper",
-    version="0.0.1",
+    version="0.0.2",
     author="Fastily",
     author_email="fastily@users.noreply.github.com",
     description="Rips the contents of threads on 4chan",
