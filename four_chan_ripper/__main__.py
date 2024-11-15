@@ -63,7 +63,9 @@ class RippableThread:
         for fn in track(self.file_list, f"Processing '{self._subject}'..."):
             if not (out_file := output_dir / fn).is_file():
                 try:
-                    out_file.write_bytes(requests.get(f"https://i.4cdn.org/{self.board}/{fn}", headers=self._headers).content)
+                    body = requests.get(f"https://i.4cdn.org/{self.board}/{fn}", headers=self._headers).content
+                    if any(s for s in body): # 404'd media is sometimes all null bytes
+                        out_file.write_bytes(body)
                 except Exception:
                     log.warning("Failed to download '%s'", fn, exc_info=True)
                     success = False
