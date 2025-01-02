@@ -5,6 +5,7 @@ import logging
 from argparse import ArgumentParser
 from pathlib import Path
 from random import choice
+from time import sleep
 from urllib.parse import urlparse
 
 import requests
@@ -17,6 +18,7 @@ from spawn_user_agent.user_agent import SpawnUserAgent
 
 log = logging.getLogger(__name__)
 
+_MAX_RETRIES = 3
 _UAS = SpawnUserAgent.generate_all()
 
 
@@ -61,14 +63,26 @@ class RippableThread:
 
         success = True
         for fn in track(self.file_list, f"Processing '{self._subject}'..."):
-            if not (out_file := output_dir / fn).is_file():
+            if (out_file := output_dir / fn).is_file():
+                continue
+
+            attempt = 1
+            while attempt <= _MAX_RETRIES:
                 try:
-                    body = requests.get(f"https://i.4cdn.org/{self.board}/{fn}", headers=self._headers).content
-                    if any(s for s in body): # 404'd media is sometimes all null bytes
-                        out_file.write_bytes(body)
+                    if (r := requests.get(f"https://i.4cdn.org/{self.board}/{fn}", headers=self._headers)).status_code == requests.codes.too_many_requests:
+                        log.warning("Throttled by server when downloading '%s', sleeping 5s.  This was attempt %d of %d", fn, attempt, _MAX_RETRIES)
+                        sleep(5)
+                    else:
+                        body = r.content
+                        if any(s for s in body):  # deleted/404'd media is sometimes all null bytes, these should be skipped.
+                            out_file.write_bytes(body)
+                        break
                 except Exception:
-                    log.warning("Failed to download '%s'", fn, exc_info=True)
-                    success = False
+                    log.warning("Failed to download '%s', this was attempt %d of %d", fn, attempt, _MAX_RETRIES, exc_info=True)
+
+                attempt += 1
+
+            success &= attempt <= _MAX_RETRIES
 
         return success
 
