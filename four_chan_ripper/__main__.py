@@ -7,6 +7,7 @@ from pathlib import Path
 from random import choice
 from time import sleep
 from urllib.parse import urlparse
+from uuid import uuid4
 
 import requests
 
@@ -110,7 +111,7 @@ def _main() -> None:
 
     targets = {}
     display_pairs = {}
-    for l in [tr.select("td") for tr in BeautifulSoup(requests.get(f"https://boards.4chan.org/{args.b}/archive").text, 'lxml').select(".flashListing tbody tr")]:
+    for l in [tr.select("td") for tr in BeautifulSoup(requests.get(f"https://boards.4chan.org/{args.b}/archive", headers={"User-Agent": "PostmanRuntime/7.43.2", "Postman-Token": str(uuid4())}).text, 'lxml').select(".flashListing tbody tr")]:
         if (args.b + (id := l[0].string)) not in archived:
             targets[id] = (rt := RippableThread(args.b, id))
             display_pairs[id] = f"[{len(rt.file_list)}] {l[1].get_text()}"
