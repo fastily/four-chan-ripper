@@ -55,7 +55,8 @@ class RippableThread:
         Returns:
             bool: `True` if there were no errors
         """
-        (output_dir := out_dir / ((f"{self.thread} - " if not self.is_photoset else "") + self._subject.replace("/", "_").replace(":", "").replace("&amp;", "&"))).mkdir(parents=True, exist_ok=True)
+        dir_prefix, group_dir = ("", "sets") if self.is_photoset else (f"{self.thread} - ",  "threads")
+        (output_dir := out_dir / group_dir / f'{dir_prefix}{self._subject.replace("/", "_").replace(":", "").replace("&amp;", "&")}').mkdir(parents=True, exist_ok=True)
         log.info("Using folder: '%s'", output_dir)
 
         if self.is_photoset and self._comment and len((txt := BeautifulSoup(self._comment, "lxml").get_text("\n"))) > 50:
